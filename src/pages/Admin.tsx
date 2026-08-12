@@ -76,7 +76,7 @@ export default function Admin() {
       const profiles = await supabaseAdminApi.listProfiles()
 
       const merged: UserData[] = data.users.map((u: any) => {
-        const p = profiles.find(pr => pr.id === u.id)
+        const p = profiles.find((pr: any) => pr.id === u.id)
         return {
           id: u.id,
           email: u.email || '',
