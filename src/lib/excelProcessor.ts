@@ -173,18 +173,7 @@ export const processExcelFile = async (file: File): Promise<any[]> => {
           }
         })
 
-        // Filter exact duplicates (glitch in ERP export where the same row is exported multiple times)
-        const uniqueData = []
-        const seen = new Set()
-        for (const row of processedData) {
-          const key = `${row.order}_${row.sku}`
-          if (!seen.has(key)) {
-            seen.add(key)
-            uniqueData.push(row)
-          }
-        }
-
-        resolve(uniqueData)
+        resolve(processedData)
       } catch (error) {
         reject(error)
       }
