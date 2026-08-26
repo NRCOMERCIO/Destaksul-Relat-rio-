@@ -678,7 +678,7 @@ if (DASHBOARD_DATA.matrix && DASHBOARD_DATA.keys) {
       const reg = REGIONS[uf] || 'Norte', color = REGION_COLORS[reg] || '#ccc';
       html += `<path class="uf-path" id="path-${uf}" d="${window.UF_PATHS[uf]}" fill="${color}" onclick="selectUF('${uf}')"><title>${STATE_NAMES[uf]||uf}</title></path>`;
     });
-    $('#ufMap').setAttribute('viewBox', '30 20 380 380');
+    $('#ufMap').setAttribute('viewBox', '0 0 1000 1000');
     $('#ufMap').innerHTML = html;
     $('#mapLegend').innerHTML = Object.entries(REGION_COLORS).map(([name, col]) => `<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:${col}"></span>${name}</span>`).join('');
     
