@@ -21,6 +21,8 @@ button,input,select{font:inherit}button{cursor:pointer}.app-wrap{padding:28px;mi
 @media(max-width:820px){.app-shell{display:block;height:auto;min-height:100vh}.sidebar{position:relative;border-right:0;border-bottom:1px solid var(--line)}.side-scroll{padding:0 16px 16px}.side-scroll > *{display:none}.side-scroll > .date-grid{display:grid;margin-top:0}.side-top{padding:13px 16px}.main{overflow:visible}.main-inner{padding:18px 14px 60px}.topbar{display:block}.top-actions{justify-content:flex-start;margin-top:12px}.kpi-grid{grid-template-columns:repeat(2,1fr)}.grid-3,.grid-4{grid-template-columns:1fr}.goal-grid{grid-template-columns:1fr 1fr}.quality-grid{grid-template-columns:repeat(2,1fr)}.record-search{width:100%}.section-head{align-items:flex-start;flex-direction:column}.map-wrap{height:360px}}
 @media(max-width:520px){.kpi-grid,.goal-grid,.quality-grid{grid-template-columns:1fr}.donut-layout{grid-template-columns:1fr}.donut{margin:auto}.meta-strip{display:grid;grid-template-columns:1fr 1fr}.chart-wrap{height:260px}}
 @media print{body{background:#fff}.app-wrap{padding:0}.app-shell{height:auto;display:block;box-shadow:none;border:0}.sidebar,.right-rail,.top-actions,.back-top,.section-controls,.pagination{display:none!important}.main{overflow:visible}.main-inner{padding:0}.card,.kpi-card{box-shadow:none;break-inside:avoid}.section{break-inside:avoid}.table-wrap{overflow:visible}.data-table{white-space:normal;font-size:8px}}
+
+.uf-path{transition:.2s;cursor:pointer;stroke:#fff;stroke-width:.8px;transform-origin:center;}.uf-path:hover{filter:brightness(.9);stroke-width:1.5px;}.uf-path.selected{filter:brightness(.85);stroke:#2d4050;stroke-width:1.5px;}.uf-list-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;transition:.2s;font-size:11px;color:#596274;}.uf-list-item:hover{background:#f0edff;}.uf-list-item.selected{background:#f0edff;font-weight:700;color:var(--purple);}
 </style>
 </head>
 <body>
@@ -147,10 +149,30 @@ button,input,select{font:inherit}button{cursor:pointer}.app-wrap{padding:28px;mi
             <article class="card"><div class="card-title-row"><div><h3>Forma de pagamento</h3></div><select class="control-select" id="paymentMetric"><option value="orders">Pedidos</option><option value="revenue">Faturamento</option></select></div><div class="donut-layout"><div class="donut" id="paymentDonut"></div><div class="legend" id="paymentLegend"></div></div></article>
             <article class="card"><div class="card-title-row"><div><h3>Situação dos pedidos</h3></div><select class="control-select" id="statusMetric"><option value="orders">Pedidos</option><option value="revenue">Valor bruto</option><option value="qty">Produtos</option></select></div><div class="donut-layout"><div class="donut" id="statusDonut"></div><div class="legend" id="statusLegend"></div></div></article>
           </div>
-          <div class="grid-2" style="margin-top:14px">
-            <article class="card"><div class="card-title-row"><div><h3>Mapa de vendas por UF</h3><div class="card-sub">Mapa esquemático offline; tamanho e intensidade representam faturamento.</div></div></div><div class="map-wrap"><svg class="map-svg" id="ufMap"></svg></div></article>
-            <article class="card"><div class="card-title-row"><div><h3>Ranking geográfico</h3><div class="card-sub">Faturamento, pedidos, ticket, participação e recompra.</div></div></div><div class="mini-stat-grid" id="ufHighlights"></div><div class="table-wrap" style="max-height:340px;margin-top:12px" id="ufTable"></div></article>
-          </div>
+          <article class="card" style="margin-top:14px; padding:0; overflow:hidden;">
+            <div class="grid-2" style="gap:0; grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);">
+              <div style="padding:20px; display:flex; flex-direction:column;">
+                <div class="map-wrap" style="flex:1; height:480px; position:relative;">
+                  <svg class="map-svg" id="ufMap" viewBox="0 0 500 500" style="width:100%; height:100%;"></svg>
+                </div>
+                <div id="mapLegend" style="display:flex; justify-content:center; gap:12px; font-size:10px; color:#596274; margin-top:10px; font-weight:600;"></div>
+              </div>
+              <div style="background:#fcfcfe; border-left:1px solid var(--line); padding:24px 20px; display:flex; flex-direction:column;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+                  <div>
+                    <h3 id="ufDetailTitle" style="margin:0; color:#2d4050; font-size:16px;">Selecione um Estado</h3>
+                    <div id="ufDetailSub" style="font-size:10px; color:var(--muted); margin-top:3px;">Visão Geral</div>
+                  </div>
+                  <div id="ufRankBadge" class="filter-chip" style="font-weight:700; display:none;">#1 no Brasil</div>
+                </div>
+                <div class="mini-stat-grid" id="ufHighlights" style="margin-bottom:16px;"></div>
+                <div style="font-size:11px; font-weight:700; color:#d8601c; margin-bottom:8px; border-bottom:1px solid var(--line); padding-bottom:6px; display:flex; align-items:center; gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg> Top Estados no Período (Clique para focar):
+                </div>
+                <div id="ufRankList" style="flex:1; overflow-y:auto; max-height:260px; display:flex; flex-direction:column; gap:2px;"></div>
+              </div>
+            </div>
+          </article>
         </section>
 
         <section class="section" id="ocorrencias">
@@ -613,14 +635,61 @@ if (DASHBOARD_DATA.matrix && DASHBOARD_DATA.keys) {
     legend.innerHTML=data.slice(0,12).map((x,i)=>`<div class="legend-item"><span class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></span><span title="${esc(x.name)}">${esc(String(x.name).slice(0,29))}</span><b>${PCT.format(pct(x.value,total))}%</b></div>`).join('');
   }
 
-  const UF_POS={AC:[70,210],RO:[125,205],AM:[145,120],RR:[183,55],AP:[320,64],PA:[282,130],TO:[306,198],MA:[372,155],PI:[406,187],CE:[458,192],RN:[492,202],PB:[486,222],PE:[462,240],AL:[465,260],SE:[449,274],BA:[392,270],MT:[226,224],GO:[307,264],DF:[329,252],MS:[238,305],MG:[354,324],ES:[421,330],RJ:[392,360],SP:[317,361],PR:[291,401],SC:[307,432],RS:[272,472]};
+  const REGIONS = {'AC':'Norte','AP':'Norte','AM':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte','AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste','PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste','DF':'Centro-Oeste','GO':'Centro-Oeste','MT':'Centro-Oeste','MS':'Centro-Oeste','ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste','PR':'Sul','RS':'Sul','SC':'Sul'};
+  const REGION_COLORS = {'Norte':'#10b981','Nordeste':'#f59e0b','Centro-Oeste':'#8b5cf6','Sudeste':'#3b82f6','Sul':'#ec4899'};
+  const STATE_NAMES = {'AC':'Acre','AL':'Alagoas','AP':'Amapá','AM':'Amazonas','BA':'Bahia','CE':'Ceará','DF':'Distrito Federal','ES':'Espírito Santo','GO':'Goiás','MA':'Maranhão','MT':'Mato Grosso','MS':'Mato Grosso do Sul','MG':'Minas Gerais','PA':'Pará','PB':'Paraíba','PR':'Paraná','PE':'Pernambuco','PI':'Piauí','RJ':'Rio de Janeiro','RN':'Rio Grande do Norte','RS':'Rio Grande do Sul','RO':'Rondônia','RR':'Roraima','SC':'Santa Catarina','SP':'São Paulo','SE':'Sergipe','TO':'Tocantins'};
   function ufAgg(m){const groups=groupBy(m.eligible,r=>r.uf),total=m.revenue;return [...groups].map(([uf,rows])=>{const orders=aggregateOrders(rows),clients=new Set([...orders.values()].map(o=>o.client)),byC=groupBy([...orders.values()],o=>o.client),rev=sum(rows,r=>r.revenue);return {uf,revenue:rev,orders:orders.size,qty:sum(rows,r=>r.qty),clients:clients.size,ticket:orders.size?rev/orders.size:0,revenueShare:pct(rev,total),orderShare:pct(orders.size,m.orderCount),repurchase:clients.size?[...byC.values()].filter(v=>v.length>=2).length/clients.size*100:0};}).sort((a,b)=>b.revenue-a.revenue);}
+  
+  window.selectUF = function(uf) {
+    document.querySelectorAll('.uf-path').forEach(p => p.classList.remove('selected'));
+    document.querySelectorAll('.uf-list-item').forEach(p => p.classList.remove('selected'));
+    if ($(`#path-${uf}`)) $(`#path-${uf}`).classList.add('selected');
+    if ($(`#list-${uf}`)) $(`#list-${uf}`).classList.add('selected');
+    
+    const d = window.ufData.find(x => x.uf === uf) || { revenue: 0, orders: 0, qty: 0 };
+    const rank = window.ufData.findIndex(x => x.uf === uf) + 1;
+    
+    $('#ufDetailTitle').innerText = `${STATE_NAMES[uf]||uf} (${uf})`;
+    $('#ufDetailSub').innerText = `Capital: — · Região ${REGIONS[uf]||''}`;
+    
+    if (rank > 0 && d.revenue > 0) {
+      $('#ufRankBadge').style.display = 'inline-block';
+      $('#ufRankBadge').innerText = `#${rank} no Brasil`;
+      $('#ufRankBadge').style.background = '#f0edff';
+      $('#ufRankBadge').style.color = 'var(--purple)';
+    } else {
+      $('#ufRankBadge').style.display = 'none';
+    }
+
+    $('#ufHighlights').innerHTML = `
+      <div class="mini-stat"><span>FATURAMENTO TOTAL</span><strong style="color:var(--purple)">${BRL.format(d.revenue)}</strong></div>
+      <div class="mini-stat"><span>PARTICIPAÇÃO NACIONAL</span><strong style="color:#d8601c">${PCT.format(pct(d.revenue, window.ufTotal))}% do total</strong></div>
+      <div class="mini-stat"><span>UNIDADES VENDIDAS</span><strong>${NUM.format(d.qty)} un</strong></div>
+      <div class="mini-stat"><span>TOTAL DE PEDIDOS</span><strong>${NUM.format(d.orders)} pedidos</strong></div>
+    `;
+  };
+
   function renderUF(m){
-    const data=ufAgg(m),max=Math.max(...data.map(x=>x.revenue),1),lookup=new Map(data.map(x=>[x.uf,x]));let html='<path d="M65 190 L90 120 L135 75 L205 36 L278 50 L336 72 L394 128 L485 177 L505 235 L470 285 L425 337 L395 380 L335 438 L287 503 L245 466 L220 395 L188 340 L145 285 L100 258 Z" fill="#f5f6fa" stroke="#e1e4ea" stroke-width="2"/>';
-    for(const [uf,[x,y]] of Object.entries(UF_POS)){const d=lookup.get(uf),t=d?d.revenue/max:0,fill=d?`rgba(87,65,199,${.15+.8*t})`:'#eceef3',r=10+8*Math.sqrt(t);html+=`<circle class="map-state" cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="1.5"><title>${uf}: ${d?BRL.format(d.revenue):'Sem vendas'} · ${d?NUM.format(d.orders):0} pedidos</title></circle><text class="map-label" x="${x}" y="${y+3}">${uf}</text>`;}
-    $('#ufMap').setAttribute('viewBox','45 25 480 500');$('#ufMap').innerHTML=html;
-    $('#ufTable').innerHTML=tableHTML(['#','UF','Faturamento','Pedidos','Produtos','Clientes','Ticket','% Fat.','% Ped.','Recompra'],data.map((x,i)=>[i+1,x.uf,BRL.format(x.revenue),NUM.format(x.orders),NUM.format(x.qty),NUM.format(x.clients),BRL.format(x.ticket),`${PCT.format(x.revenueShare)}%`,`${PCT.format(x.orderShare)}%`,`${PCT.format(x.repurchase)}%`]));
-    const topOrders=[...data].sort((a,b)=>b.orders-a.orders)[0],topTicket=[...data].sort((a,b)=>b.ticket-a.ticket)[0];$('#ufHighlights').innerHTML=`<div class="mini-stat"><span>Maior faturamento</span><strong>${data[0]?.uf||'—'}</strong><small>${data[0]?BRL.format(data[0].revenue):'—'}</small></div><div class="mini-stat"><span>Mais pedidos</span><strong>${topOrders?.uf||'—'}</strong><small>${topOrders?NUM.format(topOrders.orders):'—'}</small></div><div class="mini-stat"><span>Maior ticket</span><strong>${topTicket?.uf||'—'}</strong><small>${topTicket?BRL.format(topTicket.ticket):'—'}</small></div><div class="mini-stat"><span>UFs atendidas</span><strong>${NUM.format(data.length)}</strong><small>de 27 UFs brasileiras</small></div>`;
+    const data = ufAgg(m), totalFat = m.revenue;
+    window.ufData = data; window.ufTotal = totalFat;
+    let html = '';
+    const ufs = Object.keys(window.UF_PATHS || {});
+    ufs.forEach(uf => {
+      const reg = REGIONS[uf] || 'Norte', color = REGION_COLORS[reg] || '#ccc';
+      html += `<path class="uf-path" id="path-${uf}" d="${window.UF_PATHS[uf]}" fill="${color}" onclick="selectUF('${uf}')"><title>${STATE_NAMES[uf]||uf}</title></path>`;
+    });
+    $('#ufMap').setAttribute('viewBox', '30 20 380 380');
+    $('#ufMap').innerHTML = html;
+    $('#mapLegend').innerHTML = Object.entries(REGION_COLORS).map(([name, col]) => `<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:${col}"></span>${name}</span>`).join('');
+    
+    $('#ufRankList').innerHTML = data.map((x, i) => `
+      <div id="list-${x.uf}" class="uf-list-item" onclick="selectUF('${x.uf}')">
+        <div><b style="color:var(--muted);width:24px;display:inline-block">#${i+1}</b> <strong>${x.uf}</strong></div>
+        <div><span>${BRL.format(x.revenue)}</span> <small style="color:var(--muted)">(${PCT.format(pct(x.revenue, totalFat))}%)</small></div>
+      </div>
+    `).join('');
+    
+    if(data[0]) selectUF(data[0].uf);
   }
 
   function renderLosses(m){
