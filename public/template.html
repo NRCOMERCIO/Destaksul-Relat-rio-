@@ -336,7 +336,7 @@ if (DASHBOARD_DATA.matrix && DASHBOARD_DATA.keys) {
   };
 
   const state = {
-    dateStart:META.minDate,dateEnd:META.maxDate,
+    dateStart: (META.maxDate ? META.maxDate.substring(0, 8) + '01' : META.minDate), dateEnd: META.maxDate,
     selected:Object.fromEntries(Object.entries(options).map(([k,v])=>[k,new Set(v)])),
     productSearch:'',skuSearch:'',clientSearch:'',
     dailyMetric:'revenue',skuMetric:'qty',heatMetric:'orders',paretoDimension:'sku',paretoMetric:'revenue',abcClass:'ALL',
