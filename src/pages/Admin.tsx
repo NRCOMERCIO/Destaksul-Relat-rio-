@@ -122,8 +122,12 @@ export default function Admin() {
     }
   }
 
-  const handleDeleteUser = async (id: string) => {
-    if (!window.confirm('Tem certeza que deseja excluir este usuário definitivamente?')) return
+  const handleDeleteUser = async (id: string, email: string) => {
+    const userInput = window.prompt(`Tem certeza que deseja excluir este usuário definitivamente?\n\nPara confirmar, digite o e-mail do usuário:\n${email}`)
+    if (userInput !== email) {
+      if (userInput !== null) alert('E-mail incorreto. A exclusão foi cancelada.')
+      return
+    }
     
     try {
       await supabaseAdminApi.deleteUser(id)
@@ -202,7 +206,11 @@ export default function Admin() {
   }
 
   const handleDeleteUpload = async (id: string, filename: string) => {
-    if (!window.confirm(`ATENÇÃO: Deseja mesmo excluir o arquivo "${filename}"?\n\nISSO APAGARÁ TODAS AS VENDAS RELACIONADAS A ELE no Dashboard.`)) return
+    const userInput = window.prompt(`ATENÇÃO: Deseja mesmo excluir o arquivo "${filename}"?\n\nISSO APAGARÁ TODAS AS VENDAS RELACIONADAS A ELE no Dashboard.\n\nPara confirmar, digite exatamente o nome do arquivo:\n${filename}`)
+    if (userInput !== filename) {
+      if (userInput !== null) alert('Nome do arquivo incorreto. A exclusão foi cancelada.')
+      return
+    }
     
     try {
       const { error } = await supabase.from('uploads').delete().eq('id', id)
@@ -400,7 +408,7 @@ export default function Admin() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right text-sm font-medium">
-                          <button onClick={() => handleDeleteUser(user.id)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 rounded" title="Excluir usuário">
+                          <button onClick={() => handleDeleteUser(user.id, user.email)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 rounded" title="Excluir usuário">
                             <Trash2 size={16} />
                           </button>
                         </td>
