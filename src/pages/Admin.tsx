@@ -12,6 +12,7 @@ type UserData = {
   email: string
   role: string
   created_at: string
+  last_sign_in_at?: string
 }
 
 type UploadRecord = {
@@ -81,7 +82,8 @@ export default function Admin() {
           id: u.id,
           email: u.email || '',
           role: p?.role || 'user',
-          created_at: new Date(u.created_at).toLocaleDateString('pt-BR')
+          created_at: new Date(u.created_at).toLocaleDateString('pt-BR'),
+          last_sign_in_at: u.last_sign_in_at
         }
       })
       setUsers(merged)
@@ -357,11 +359,32 @@ export default function Admin() {
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nível</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último Acesso</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {users.map((user) => (
+                    {users.map((user) => {
+                      let statusText = 'Offline';
+                      let statusColor = 'bg-gray-400';
+                      let formattedDate = 'Nunca acessou';
+                      
+                      if (user.last_sign_in_at) {
+                        const lastAccess = new Date(user.last_sign_in_at);
+                        formattedDate = lastAccess.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+                        const diffMins = (new Date().getTime() - lastAccess.getTime()) / (1000 * 60);
+                        
+                        if (diffMins < 60) {
+                          statusText = 'Online';
+                          statusColor = 'bg-green-500';
+                        } else if (diffMins < 60 * 24) {
+                          statusText = 'Ausente';
+                          statusColor = 'bg-orange-500';
+                        }
+                      }
+
+                      return (
                       <tr key={user.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 text-sm text-gray-900 truncate max-w-[150px]">{user.email}</td>
                         <td className="px-4 py-3">
@@ -369,13 +392,20 @@ export default function Admin() {
                             {user.role === 'admin' ? 'Master' : 'Base'}
                           </span>
                         </td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${statusColor}`}></span>
+                            <span className="text-xs font-medium text-gray-600">{statusText}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-right text-sm font-medium">
                           <button onClick={() => handleDeleteUser(user.id)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 rounded" title="Excluir usuário">
                             <Trash2 size={16} />
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    )})}
                   </tbody>
                 </table>
               </div>
